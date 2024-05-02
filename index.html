@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual List</title>
+    <style>
+        body {
+            padding: 4rem;
+        }
+
+        #container {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            position: relative;
+
+        }
+
+        .list-content {
+            position: sticky;
+            pointer-events: none;
+            width: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        .item {
+            height: 60px;
+            border-bottom: 1px solid #ccc;
+            padding: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="container">
+        <div class="list">
+            <div class="list-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const USE_VIRTUAL_LIST = true;
+
+        // Dados de exemplo
+        const items = Array.from({ length: 100000 }, (_, i) => `Item ${i + 1}`);
+        const container = document.getElementById('container');
+
+        // Função para renderizar os itens visíveis
+        function virtualScroll(container) {
+            const containerHeight = container.clientHeight;
+            const itemHeight = 10;
+
+            // define a altura da .list
+            container.querySelector('.list').style.height = `${items.length * itemHeight}px`;
+
+            const start = Math.floor(container.scrollTop / itemHeight);
+            const end = Math.min(start + Math.ceil(containerHeight / itemHeight), items.length);
+
+            // Renderiza os itens visíveis
+            container.querySelector('.list-content').innerHTML = items.slice(start, end).map(item => `<div class="item">${item}</div>`).join('');
+        }
+
+        function addAllItems() {
+            container.querySelector('.list-content').innerHTML = items.map(item => `<div class="item">${item}</div>`).join('');
+        }
+
+        if (USE_VIRTUAL_LIST) {
+            virtualScroll(container);
+            container.addEventListener('scroll', () => virtualScroll(container));
+        } else {
+            addAllItems();
+        }
+    </script>
+
+</body>
+
+</html>
